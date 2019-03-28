@@ -121,7 +121,7 @@ def restart_app_server(app_base_path, app_root_path, operate):
     return {"shutdown_result": shutdown_result, "start_result": start_result}
 
 
-def pull_server(app_base_path):
+def upgrade_server(app_base_path):
     logging.info('system: 服务开启...')
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # 重用ip和端口，解决四次挥手的time_wait状态在占用地址问题
@@ -285,4 +285,4 @@ def pull_server(app_base_path):
 if __name__ == '__main__':
     home_path = os.path.dirname(os.path.realpath(__file__))
     init_log_file(home_path)
-    pull_server(home_path)
+    upgrade_server(home_path)
