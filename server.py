@@ -86,8 +86,8 @@ def pull_code_from_git_server(app_base_path, config_json, client_json):
             comand_result = str(exec_comand.read())
             if last_count == len(git_commands):
                 if 'Already up to date' in comand_result or 'Already up-to-date' in comand_result:
-                    logging.info(str(client_addr) + "  " + title + "远程GIT仓库代码未更新")
-                    func_msg += title + "远程GIT仓库代码未更新！\r\n"
+                    logging.info(str(client_addr) + "  " + title + "远程GIT仓库代码没有更新")
+                    func_msg += title + "远程GIT仓库代码没有更新！\r\n"
                 else:
                     logging.info(str(client_addr) + "  " + title + "代码更新成功")
                     if device_name == 'siri':
@@ -201,7 +201,11 @@ def upgrade_server(app_base_path):
                 return_json = pull_code_from_git_server(app_base_path=app_base_path, config_json=server_conf_json,
                                                         client_json=client_data_json)
                 func_msg = return_json.get('func_msg', '从服务器拉取代码异常\r\n')
-                send_to_client_msg += func_msg
+                code_update_flag = return_json.get('code_update_flag', False)
+                if not code_update_flag:
+                    send_to_client_msg += "服务器端代码的远程GIT仓库均没有更新！\r\n"
+                else:
+                    send_to_client_msg += func_msg
                 logging.info(str(client_addr) + "  " + func_msg)
             elif operate == 'restart':  # 只重启
                 return_json = restart_app_server(app_base_path=app_base_path, app_root_path=app_root_path,
@@ -234,9 +238,9 @@ def upgrade_server(app_base_path):
                                                         client_json=client_data_json)
                 code_update_flag = return_json.get('code_update_flag', False)
                 func_msg = return_json.get('func_msg', '从服务器拉取代码异常\r\n')
-                send_to_client_msg += func_msg + "\r\n"
                 log_msg = ""
                 if code_update_flag:
+                    send_to_client_msg += func_msg + "\r\n"
                     # 代码有更新，重启并且升级base
                     return_json = restart_app_server(app_base_path=app_base_path, app_root_path=app_root_path,
                                                      operate='upgrade')
@@ -262,8 +266,8 @@ def upgrade_server(app_base_path):
                         send_to_client_msg += "重启应用失败！\r\n"
                         log_msg += "重启应用失败！"
                 else:
-                    send_to_client_msg += "代码未更新，本次不重启！\r\n"
-                    log_msg += "代码未更新，本次不重启！"
+                    send_to_client_msg += "服务器端代码的远程GIT仓库均没有更新，本次不重启！\r\n"
+                    log_msg += "服务器端代码的远程GIT仓库均没有更新，本次不重启！"
                 logging.info(str(client_addr) + "  " + log_msg)
             else:
                 send_to_client_msg += "你期望的操作" + operate + "不支持！请检查！\r\n"
