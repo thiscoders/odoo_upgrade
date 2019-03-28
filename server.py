@@ -54,7 +54,7 @@ def pull_code_from_git_server(app_base_path, config_json, client_json):
     device_name = client_json.get('device', 'curl')
     code_list = config_json.get('code_list', False)
     if not code_list:
-        logging.error(client_addr + "  配置文件中待更新代码列表为空！")
+        logging.error(str(client_addr) + "  配置文件中待更新代码列表为空！")
         func_msg += "配置文件中待更新代码列表为空！\r\n"
         return {
             "code_update_flag": code_update_flag,
@@ -66,12 +66,16 @@ def pull_code_from_git_server(app_base_path, config_json, client_json):
         title = item_code.get('title', '')
         code_path = item_code.get('code_path', False)
         if not is_pull:  # 代码更新标记关闭，跳到下一个
-            logging.info(client_addr + "  " + title + "代码升级已经关闭")
+            logging.info(str(client_addr) + "  " + title + "代码升级已经关闭")
             func_msg += title + "代码升级已经关闭！ \r\n"
             continue
         if not code_path:  # 代码路径未定义，跳到下一个
-            logging.error(client_addr + "  " + title + "代码路径未定义")
+            logging.error(str(client_addr) + "  " + title + "代码路径未定义")
             func_msg += title + "代码路径未定义！ \r\n"
+            continue
+        if not os.path.exists(code_path):  # 判断代码路径是否存在
+            logging.error(str(client_addr) + "  " + title + "代码路径不存在")
+            func_msg += title + "代码路径不存在！ \r\n"
             continue
         os.chdir(code_path)
         git_commands = item_code.get('git_commands', ["git pull"])
@@ -82,10 +86,10 @@ def pull_code_from_git_server(app_base_path, config_json, client_json):
             comand_result = str(exec_comand.read())
             if last_count == len(git_commands):
                 if 'Already up to date' in comand_result or 'Already up-to-date' in comand_result:
-                    logging.info(client_addr + "  " + title + "远程GIT仓库代码未更新！")
+                    logging.info(str(client_addr) + "  " + title + "远程GIT仓库代码未更新")
                     func_msg += title + "远程GIT仓库代码未更新！\r\n"
                 else:
-                    logging.info(client_addr + "  " + title + "代码更新成功！")
+                    logging.info(str(client_addr) + "  " + title + "代码更新成功")
                     if device_name == 'siri':
                         func_msg += title + "代码更新成功！\r\n"
                     else:
@@ -105,6 +109,8 @@ def restart_app_server(app_base_path, app_root_path, operate):
     :param app_root_path:
     :return:
     """
+    if not os.path.exists(app_root_path):  # 判断APP根路径是否存在
+        return {"shutdown_result": -1, "start_result": -1, "error_msg": "应用根路径不存在，重启失败！"}
     os.chdir(app_root_path)
     shutdown_result = os.system('docker-compose down')
     if operate == 'restart':
@@ -169,7 +175,7 @@ def pull_server(app_base_path):
             try:
                 json_centent = msg_list[len(msg_list) - 1]
                 if len(json_centent) < 1 or json_centent.find('{') < 0:
-                    logging.info(str(client_addr) + "  请传递报文\r\n")
+                    logging.info(str(client_addr) + "  请传递报文")
                     conn.send("\n请传递报文！\r\n".encode("utf-8"))
                     conn.close()
                     continue
@@ -182,7 +188,7 @@ def pull_server(app_base_path):
             client_data_json['client_ip'] = str(client_addr)
             device = client_data_json.get('device', 'smart')
             if device not in ("curl", "siri", "wget"):
-                logging.info(str(client_addr) + "  不支持的device\r\n")
+                logging.info(str(client_addr) + "  不支持的device")
                 conn.send("\n不支持的device！\r\n".encode("utf-8"))
                 conn.close()
                 continue
@@ -196,43 +202,72 @@ def pull_server(app_base_path):
                                                         client_json=client_data_json)
                 func_msg = return_json.get('func_msg', '从服务器拉取代码异常\r\n')
                 send_to_client_msg += func_msg
+                logging.info(str(client_addr) + "  " + func_msg)
             elif operate == 'restart':  # 只重启
                 return_json = restart_app_server(app_base_path=app_base_path, app_root_path=app_root_path,
                                                  operate='restart')
+                error_msg = return_json.get('error_msg', False)
+                if error_msg:
+                    logging.info(str(client_addr) + "  " + error_msg)
+                    send_to_client_msg += error_msg
+                    conn.send(("\n" + send_to_client_msg + "\r\n").encode("utf-8"))
+                    conn.close()
+                    continue
                 shutdown_result = return_json.get('shutdown_result', -1)
                 start_result = return_json.get('start_result', -1)
+                log_msg = ""
                 if shutdown_result == 0:
                     send_to_client_msg += "关闭应用成功，\r\n"
+                    log_msg += "关闭应用成功，"
                 else:
                     send_to_client_msg += "关闭应用失败，\r\n"
+                    log_msg += "关闭应用失败，"
                 if start_result == 0:
                     send_to_client_msg += "重启应用成功！\r\n"
+                    log_msg += "重启应用成功！"
                 else:
                     send_to_client_msg += "重启应用失败！\r\n"
+                    log_msg += "重启应用失败！"
+                logging.info(str(client_addr) + "  " + log_msg)
             elif operate == 'smart':  # 智能操作，根据代码更新情况决定是否重启
                 return_json = pull_code_from_git_server(app_base_path=app_base_path, config_json=server_conf_json,
                                                         client_json=client_data_json)
                 code_update_flag = return_json.get('code_update_flag', False)
                 func_msg = return_json.get('func_msg', '从服务器拉取代码异常\r\n')
                 send_to_client_msg += func_msg + "\r\n"
+                log_msg = ""
                 if code_update_flag:
                     # 代码有更新，重启并且升级base
                     return_json = restart_app_server(app_base_path=app_base_path, app_root_path=app_root_path,
                                                      operate='upgrade')
+                    error_msg = return_json.get('error_msg', False)
+                    if error_msg:
+                        logging.info(str(client_addr) + "  " + error_msg)
+                        send_to_client_msg += error_msg
+                        conn.send(("\n" + send_to_client_msg + "\r\n").encode("utf-8"))
+                        conn.close()
+                        continue
                     shutdown_result = return_json.get('shutdown_result', -1)
                     start_result = return_json.get('start_result', -1)
                     if shutdown_result == 0:
                         send_to_client_msg += "关闭应用成功，\r\n"
+                        log_msg += "关闭应用成功，"
                     else:
                         send_to_client_msg += "关闭应用失败，\r\n"
+                        log_msg += "关闭应用失败，"
                     if start_result == 0:
                         send_to_client_msg += "重启应用成功！BASE模块正在升级，请稍后访问！\r\n"
+                        log_msg += "重启应用成功！BASE模块正在升级，请稍后访问！"
                     else:
                         send_to_client_msg += "重启应用失败！\r\n"
+                        log_msg += "重启应用失败！"
                 else:
                     send_to_client_msg += "代码未更新，本次不重启！\r\n"
+                    log_msg += "代码未更新，本次不重启！"
+                logging.info(str(client_addr) + "  " + log_msg)
             else:
-                send_to_client_msg += "你期望的操作不支持！请检查！\r\n"
+                send_to_client_msg += "你期望的操作" + operate + "不支持！请检查！\r\n"
+                logging.info(str(client_addr) + "  你期望的操作" + operate + "不支持！请检查！")
 
             # todo 5 发送核心功能执行结果
             conn.send(send_to_client_msg.encode("utf-8"))
