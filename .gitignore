@@ -102,3 +102,16 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# apple file system
+.DS_Store
+
+# backup files
+*~
+*.swp
+
+# css
+*.css.map
+
+# Idea
+.idea

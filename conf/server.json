@@ -1,0 +1,31 @@
+{
+  "server_active": true,
+  "server_ip": "127.0.0.1",
+  "server_port": 8070,
+  "app_root_path": "/u01/app/",
+  "code_list": [
+    {
+      "title": "测试模块",
+      "is_pull": true,
+      "code_path": "/u01/app/test",
+      "git_commands": [
+        "git checkout -- .",
+        "git pull"
+      ],
+      "git_username": "username",
+      "git_password": "password"
+    },
+    {
+      "title": "演示模块",
+      "is_pull": true,
+      "code_path": "/u01/app/demo",
+      "git_commands": [
+        "git pull"
+      ],
+      "git_username": "username",
+      "git_password": "password"
+    }
+  ],
+  "kernel_func_before": [],
+  "kernel_func_after": []
+}
