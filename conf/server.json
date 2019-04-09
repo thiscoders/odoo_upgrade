@@ -1,31 +1,33 @@
 {
-  "server_active": true,
+  "server_title": "Odoo Upgrade Server",
   "server_ip": "127.0.0.1",
   "server_port": 8070,
-  "app_root_path": "/u01/app/",
-  "code_list": [
-    {
-      "title": "测试模块",
-      "is_pull": true,
-      "code_path": "/u01/app/test",
-      "git_commands": [
-        "git checkout -- .",
-        "git pull"
+  "server_active": true,
+  "app_list_json": {
+    "account": {
+      "app_name": "财务应用",
+      "db_path": "/u01/account/db",
+      "app_path": "/Users/liuye/PycharmProjects/trans",
+      "code_list": [
+        {
+          "title": "测试模块",
+          "is_pull": true,
+          "code_path": "/Users/liuye/Documents/gitlab/hrp",
+          "git_commands": [
+            "git pull"
+          ]
+        },
+        {
+          "title": "演示模块",
+          "is_pull": true,
+          "code_path": "/Users/liuye/Documents/gitlab/hrp_docker",
+          "git_commands": [
+            "git pull"
+          ]
+        }
       ],
-      "git_username": "username",
-      "git_password": "password"
-    },
-    {
-      "title": "演示模块",
-      "is_pull": true,
-      "code_path": "/u01/app/demo",
-      "git_commands": [
-        "git pull"
-      ],
-      "git_username": "username",
-      "git_password": "password"
+      "before_command": [],
+      "before_command": []
     }
-  ],
-  "kernel_func_before": [],
-  "kernel_func_after": []
+  }
 }
