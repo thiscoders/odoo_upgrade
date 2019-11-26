@@ -92,6 +92,11 @@ def pull_code_from_git_server(app_base_path, config_json, client_json):
             else:
                 if device_name != 'siri':
                     func_msg += command_result
+        after_action = item_code.get('after_action',False)
+        if not after_action:
+            after_action_execute = os.popen(after_action)
+            after_action_result = str(after_action_execute.read())
+            func_msg += after_action_result + "\r\n"
     os.chdir(app_base_path)  # 还原目录
     return {"is_error_flag": is_error_flag, "code_update_flag": code_update_flag, "func_msg": func_msg}
 

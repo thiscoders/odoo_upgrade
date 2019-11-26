@@ -1,6 +1,6 @@
 {
   "server_active": true,
-  "server_ip": "127.0.0.1",
+  "server_ip": "172.26.49.141",
   "server_port": 8070,
   "app_root_path": "/home/hrp/dydemo/app_demo",
   "code_list": [
@@ -24,7 +24,8 @@
         "git pull"
       ],
       "git_username": "username",
-      "git_password": "password"
+      "git_password": "password",
+      "after_action": "bash /home/hrp/auto_tools/odoo_upgrade/scripts/replace_code.sh"
     },
     {
       "title": "dy-asset",
