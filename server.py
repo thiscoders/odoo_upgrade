@@ -75,7 +75,7 @@ def pull_code_from_git_server(app_base_path, config_json, client_json):
             exec_comand = os.popen(single_command)
             command_result = str(exec_comand.read())
             if last_count == len(git_commands):
-                if 'Already up to date' in command_result or 'Already up-to-date' in command_result:
+                if 'Already up to date' in command_result or 'Already up-to-date' in command_result or 'Already up to date.' in command_result:
                     logging.info(str(client_addr) + "  " + title + "远程GIT仓库代码没有更新")
                     func_msg += title + "远程GIT仓库代码没有更新！\r\n"
                 elif 'Aborting' in command_result:
@@ -110,7 +110,7 @@ def restart_app_server(app_base_path, app_root_path, operate):
     if operate == 'restart':
         start_result = os.system('docker-compose up -d')
     elif operate == 'upgrade':
-        start_result = os.system('docker-compose -f auto-upgrade.yml up -d')
+        start_result = os.system('docker-compose up -d')
     os.chdir(app_base_path)  # 还原目录
     return {"shutdown_result": shutdown_result, "start_result": start_result}
 

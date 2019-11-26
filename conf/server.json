@@ -2,12 +2,12 @@
   "server_active": true,
   "server_ip": "127.0.0.1",
   "server_port": 8070,
-  "app_root_path": "/u01/app/",
+  "app_root_path": "/home/hrp/dydemo/app_demo",
   "code_list": [
     {
-      "title": "测试模块",
+      "title": "dy-acc-center",
       "is_pull": true,
-      "code_path": "/u01/app/test",
+      "code_path": "/home/hrp/dydemo/app_demo/code/hand-china/dy-acc-center",
       "git_commands": [
         "git checkout -- .",
         "git pull"
@@ -16,10 +16,77 @@
       "git_password": "password"
     },
     {
-      "title": "演示模块",
+      "title": "dy-ap",
       "is_pull": true,
-      "code_path": "/u01/app/demo",
+      "code_path": "/home/hrp/dydemo/app_demo/code/hand-china/dy-ap",
       "git_commands": [
+        "git checkout -- .",
+        "git pull"
+      ],
+      "git_username": "username",
+      "git_password": "password"
+    },
+    {
+      "title": "dy-asset",
+      "is_pull": true,
+      "code_path": "/home/hrp/dydemo/app_demo/code/hand-china/dy-asset",
+      "git_commands": [
+        "git checkout -- .",
+        "git pull"
+      ],
+      "git_username": "username",
+      "git_password": "password"
+    },
+    {
+      "title": "dy-base",
+      "is_pull": true,
+      "code_path": "/home/hrp/dydemo/app_demo/code/hand-china/dy-base",
+      "git_commands": [
+        "git checkout -- .",
+        "git pull"
+      ],
+      "git_username": "username",
+      "git_password": "password"
+    },
+    {
+      "title": "dy-budget",
+      "is_pull": true,
+      "code_path": "/home/hrp/dydemo/app_demo/code/hand-china/dy-budget",
+      "git_commands": [
+        "git checkout -- .",
+        "git pull"
+      ],
+      "git_username": "username",
+      "git_password": "password"
+    },
+    {
+      "title": "dy-expense",
+      "is_pull": true,
+      "code_path": "/home/hrp/dydemo/app_demo/code/hand-china/dy-expense",
+      "git_commands": [
+        "git checkout -- .",
+        "git pull"
+      ],
+      "git_username": "username",
+      "git_password": "password"
+    },
+    {
+      "title": "dy-finance",
+      "is_pull": true,
+      "code_path": "/home/hrp/dydemo/app_demo/code/hand-china/dy-finance",
+      "git_commands": [
+        "git checkout -- .",
+        "git pull"
+      ],
+      "git_username": "username",
+      "git_password": "password"
+    },
+    {
+      "title": "dy-scm",
+      "is_pull": true,
+      "code_path": "/home/hrp/dydemo/app_demo/code/hand-china/dy-scm",
+      "git_commands": [
+        "git checkout -- .",
         "git pull"
       ],
       "git_username": "username",
